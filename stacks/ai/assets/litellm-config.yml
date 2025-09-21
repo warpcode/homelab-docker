@@ -1,0 +1,196 @@
+---
+general_settings:
+  block_robots: true
+  # database_url: "sqlite:///litellm.db"
+
+litellm_settings:
+  global_prompt_directory: "/prompts"
+  check_provider_endpoint: true # 👈 Enable checking provider endpoint for wildcard models
+  max_budget: 0 # (float) sets max budget as $0 USD
+  budget_duration: 30d # (str) frequency of reset - You can set duration as seconds ("30s"), minutes ("30m"), hours ("30h"), days ("30d").
+
+# This is not a key recognised by litellm
+# but we can use it to setup some templates
+provider_settings:
+  groq:
+    default_litellm_params: &groq_default_litellm_params
+      # https://console.groq.com/docs/rate-limits
+      # rpm: 30 # Default RPM for all Groq models
+      # tpm: 6000 # Default TPM for all Groq models
+      # timeout: 30 # Default timeout for Groq
+      api_key: os.environ/GROQ_API_KEY
+
+  openrouter:
+    default_litellm_params: &openrouter_default_litellm_params
+      # https://openrouter.ai/docs/api-reference/limits
+      rpm: 20 # Default RPM for all OpenRouter models
+      # tpm: 100000 # OpenRouter doesn't have strict token limits
+      # timeout: 60 # Default timeout for OpenRouter
+      api_key: os.environ/OPENROUTER_API_KEY
+      # base_url: https://openrouter.ai/api/v1
+
+  # OpenAI (Direct API)
+  openai:
+    default_litellm_params: &openai_default_litellm_params
+      # https://platform.openai.com/docs/guides/rate-limits/free-tier-rate-limits
+      # rpm: 3500 # Tier 1: 3,500 RPM for GPT-3.5/4
+      # tpm: 200000 # Tier 1: 200k TPM for GPT-4, 1M for GPT-3.5
+      # timeout: 60 # OpenAI can be slow sometimes
+      api_key: os.environ/OPENAI_API_KEY
+
+  # GitHub Models (Free for personal use)
+  github:
+    default_litellm_params: &github_default_litellm_params
+      rpm: 15 # GitHub Models free tier limit
+      max_tokens: 8000
+      # tpm: 150000 # Generous token limit
+      # timeout: 45
+      api_key: os.environ/GITHUB_API_KEY
+      # base_url: https://models.inference.ai.azure.com
+
+  # Google Gemini (Direct API)
+  gemini:
+    default_litellm_params: &google_default_litellm_params
+      rpm: 5 # Gemini free tier: 15 RPM
+      tpm: 250000 # 32k tokens per minute free tier
+      # timeout: 60
+      api_key: os.environ/GEMINI_API_KEY
+
+router_settings:
+  # routing_strategy: rate-limit-aware # Use priority-based routing
+  enable_pre_call_checks: false
+  #
+  #   # # Global router-level rate limits (across all models)
+  #   # rpm_limit: 100 # Total requests per minute across all models
+  #   # tpm_limit: 50000 # Total tokens per minute across all models
+  #   # max_concurrent_requests: 10 # Max concurrent requests
+  #
+  #
+  # Retry settings for maximizing usage
+  num_retries: 3
+  retry_delay: 30 # 1 second delay between retries
+  # timeout: 60 # 60 second timeout
+  cooldown_time: 60 # Wait 60 seconds before retrying failed provider
+  # retry_policy:
+  #   BadRequestErrorRetries: 3
+  #   ContentPolicyViolationErrorRetries: 4
+  # allowed_fails_policy:
+  #   ContentPolicyViolationErrorAllowedFails: 1000, # Allow 1000 ContentPolicyViolationError before cooling down a deployment
+  #   RateLimitErrorAllowedFails: 100 # Allow 100 RateLimitErrors before cooling down a deployment
+
+model_list:
+  - model_name: tinyllama-1.1b-chat
+    litellm_params:
+      model: openai/tinyllama-1.1b-chat
+      api_base: http://model-tinyllama:8080/v1
+      api_key:
+      stream: true # Recommended for chat to avoid long waits
+  - model_name: adhd advisor
+    litellm_params:
+      model: "dotprompt/*"
+      prompt_id: "adhd-advisor"
+  - model_name: loreum-ipsum
+    litellm_params:
+      model: "dotprompt/*"
+      prompt_id: "loremipsum"
+  - model_name: parody-article-generator
+    litellm_params:
+      model: "dotprompt/*"
+      prompt_id: "parody-article-generator"
+
+  # gpt-oss-20b
+  - model_name: gpt-oss-20b
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: openrouter/openai/gpt-oss-20b
+
+  - model_name: gpt-oss-20b
+    litellm_params:
+      <<: *groq_default_litellm_params
+      model: groq/openai/gpt-oss-20b
+      rpm: 30 # Default RPM for all Groq models
+      tpm: 6000 # Default TPM for all Groq models
+
+  # gpt-oss-120b
+  - model_name: gpt-oss-120b
+    litellm_params:
+      <<: *groq_default_litellm_params
+      model: groq/openai/gpt-oss-120b
+      rpm: 30 # Default RPM for all Groq models
+      tpm: 6000 # Default TPM for all Groq models
+  #
+  # # Llama 3.3 70b instruct
+  # - model_name: llama-3.3-70b-versatile
+  #   litellm_params:
+  #     <<: *openrouter_default_litellm_params
+  #     model: openrouter/meta-llama/llama-3.3-70b-instruct
+  #
+  # - model_name: llama-3.3-70b-versatile
+  #   litellm_params:
+  #     <<: *groq_default_litellm_params
+  #     model: groq/llama-3.3-70b-versatile
+  #
+  # # Llama 4 Maverick 17B Instruct (128E)
+  # - model_name: llama-4-maverick-17b-128e-instruct
+  #   litellm_params:
+  #     <<: *github_default_litellm_params
+  #     model: github/Llama-4-Maverick-17B-128E-Instruct-FP8
+  # - model_name: llama-4-maverick-17b-128e-instruct
+  #   litellm_params:
+  #     <<: *openrouter_default_litellm_params
+  #     model: openrouter/meta-llama/llama-4-maverick
+  # - model_name: llama-4-maverick-17b-128e-instruct
+  #   litellm_params:
+  #     <<: *groq_default_litellm_params
+  #     model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
+  #
+  # Gemini 2.5 flash
+  - model_name: "gemini-2.5-flash"
+    litellm_params:
+      <<: *google_default_litellm_params
+      model: "gemini/gemini-2.5-flash"
+      rpm: 10 # Gemini free tier: 15 RPM
+      tpm: 250000 # 32k tokens per minute free tier
+
+  # Gemini 2.5 pro
+  - model_name: "gemini-2.5-pro"
+    litellm_params:
+      <<: *google_default_litellm_params
+      model: "gemini/gemini-2.5-pro"
+      rpm: 5 # Gemini free tier: 15 RPM
+      tpm: 250000 # 32k tokens per minute free tier
+  
+  # # Open AI
+  # - model_name: "o3-mini"
+  #   litellm_params:
+  #     <<: *openrouter_default_litellm_params
+  #     model: openrouter/openai/o3-mini
+  # - model_name: "o3-mini"
+  #   litellm_params:
+  #     <<: *openai_default_litellm_params
+  #     model: openai/o3-mini
+
+  # Providers
+  - model_name: "github/*"
+    litellm_params:
+      <<: *github_default_litellm_params
+      model: "github/*"
+  - model_name: "github/deepseek-v3"
+    litellm_params:
+      model: "github/DeepSeek-V3-0324"
+  - model_name: "openai/*"
+    litellm_params:
+      <<: *openai_default_litellm_params
+      model: "openai/*"
+  - model_name: "groq/*"
+    litellm_params:
+      <<: *groq_default_litellm_params
+      model: "groq/*"
+  - model_name: "gemini/*"
+    litellm_params:
+      <<: *google_default_litellm_params
+      model: "gemini/*"
+  - model_name: "openrouter/*"
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: "openrouter/*"
