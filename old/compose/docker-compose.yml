@@ -1,0 +1,163 @@
+services:
+
+  #
+  # Management
+  #
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    # ports:
+    #   - 9000:9000
+    labels:
+      # Frontend
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`portainer.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.services.frontend.loadbalancer.server.port=9000"
+      - "traefik.http.routers.frontend.service=frontend"
+      - "traefik.http.routers.frontend.tls.certresolver=leresolver"
+
+      # Edge
+      - "traefik.http.routers.edge.rule=Host(`edge.localhost`)"
+      - "traefik.http.routers.edge.entrypoints=websecure"
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"
+      - "traefik.http.routers.edge.service=edge"
+      - "traefik.http.routers.edge.tls.certresolver=leresolver"
+
+  registry:
+    restart: unless-stopped
+    image: registry:2
+    ports:
+      - 5000:5000
+    # environment:
+    #   REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+    #   REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+    #   REGISTRY_AUTH: htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - registry_data:/var/lib/registry
+      - registry_certs:/certs
+      - registry_auth:/auth
+
+  #
+  # DNS
+  #
+  consul:
+    container_name: consul
+    image: hashicorp/consul
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    # ports:
+      # - "53:53/tcp"
+      # - "53:53/udp"
+      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      # - "8081:80/tcp"
+    dns:
+      - 127.0.0.1
+      - 9.9.9.9
+    environment:
+      TZ: 'Europe/London'
+      WEBPASSWORD: 'CHANGEME'
+    # Volumes store your data between container upgrades
+    volumes:
+      - 'pihole_etc:/etc/pihole'
+      - 'pihole_dnsmasq_d:/etc/dnsmasq.d'
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    networks:
+      - reverse_proxy
+    cap_add:
+      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.localhost`)"
+      - "traefik.http.routers.pihole.entrypoints=websecure"
+      - "traefik.http.routers.pihole.tls=true"
+      - "traefik.http.routers.pihole.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.pihole.tls.domains[0].main=pihole.localhost"
+      - "traefik.http.routers.pihole.tls.domains[0].sans=pihole.localhost"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+volumes:
+  pihole_etc:
+  pihole_dnsmasq_d:
+  portainer_data:
+  registry_data:
+  registry_certs:
+  registry_auth:
+
+networks:
+  reverse_proxy:
+
+  # Databases
+  # mosquitto:
+  #   container_name: mosquitto
+  #   image: eclipse-mosquitto
+  #   volumes:
+  #     - ./data/mosquitto:/mosquitto
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   ports:
+  #     - 1883:1883
+  #     - 9001:9001
+
+  # RSS
+  # freshrss:
+  #   container_name: freshrss
+  #   image: 
+
+  # Home automation
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: ghcr.io/home-assistant/home-assistant:stable
+  #   volumes:
+  #     - ./data/homeassistant/config:/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #   restart: unless-stopped
+  #   privileged: true
+  #   network_mode: host
+  # zigbee2mqtt:
+  #   container_name: zigbee2mqtt
+  #   image: koenkk/zigbee2mqtt
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/zigbee2mqtt/data:/app/data
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /run/udev:/run/udev:ro
+  #   ports:
+  #     # Frontend port
+  #     - 8080:8080
+  #   devices:
+  #     # Make sure this matched your adapter location
+  #     - /dev/ttyUSB0:/dev/ttyACM0
+  #   network_mode: host
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  # nodered:
+  #   container_name: nodered
+  #   image: nodered/node-red
+  #   environment:
+  #     - TZ=Europe/London
+  #   volumes:
+  #     - ./data/nodered/data:/data:rw
+  #   restart: unless-stopped
+  #   ports:
+  #     - 1880:1880
+

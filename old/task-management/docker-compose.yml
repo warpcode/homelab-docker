@@ -1,0 +1,109 @@
+version: '3'
+services:
+  # Required core
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/portainer/data:/data
+    # ports:
+    #   - 9000:9000
+    networks:
+      - proxy_proxy
+    labels:
+      # Frontend
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`portainer.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.services.frontend.loadbalancer.server.port=9000"
+      - "traefik.http.routers.frontend.service=frontend"
+      - "traefik.http.routers.frontend.tls.certresolver=leresolver"
+
+      # Edge
+      - "traefik.http.routers.edge.rule=Host(`edge.localhost`)"
+      - "traefik.http.routers.edge.entrypoints=websecure"
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"
+      - "traefik.http.routers.edge.service=edge"
+      - "traefik.http.routers.edge.tls.certresolver=leresolver"
+
+
+  registry:
+    restart: unless-stopped
+    image: registry:2
+    ports:
+      - 5000:5000
+    # environment:
+    #   REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+    #   REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+    #   REGISTRY_AUTH: htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - ./data/registry/data:/var/lib/registry
+      - ./data/registry/certs:/certs
+      - ./data/registry/auth:/auth
+
+networks:
+  proxy_proxy:
+    external: true
+
+  # Databases
+  # mosquitto:
+  #   container_name: mosquitto
+  #   image: eclipse-mosquitto
+  #   volumes:
+  #     - ./data/mosquitto:/mosquitto
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   ports:
+  #     - 1883:1883
+  #     - 9001:9001
+
+  # RSS
+  # freshrss:
+  #   container_name: freshrss
+  #   image: 
+
+  # Home automation
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: ghcr.io/home-assistant/home-assistant:stable
+  #   volumes:
+  #     - ./data/homeassistant/config:/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #   restart: unless-stopped
+  #   privileged: true
+  #   network_mode: host
+  # zigbee2mqtt:
+  #   container_name: zigbee2mqtt
+  #   image: koenkk/zigbee2mqtt
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/zigbee2mqtt/data:/app/data
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /run/udev:/run/udev:ro
+  #   ports:
+  #     # Frontend port
+  #     - 8080:8080
+  #   devices:
+  #     # Make sure this matched your adapter location
+  #     - /dev/ttyUSB0:/dev/ttyACM0
+  #   network_mode: host
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  # nodered:
+  #   container_name: nodered
+  #   image: nodered/node-red
+  #   environment:
+  #     - TZ=Europe/London
+  #   volumes:
+  #     - ./data/nodered/data:/data:rw
+  #   restart: unless-stopped
+  #   ports:
+  #     - 1880:1880
+
