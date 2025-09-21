@@ -1,0 +1,106 @@
+services:
+  # webserver:
+  #   image: ghcr.io/paperless-ngx/paperless-ngx:latest
+  #   container_name: paperless
+  #   hostname: paperless
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - broker
+  #     - gotenberg
+  #     - tika
+  #   ports:
+  #     - 8000:8000
+  #   healthcheck:
+  #     test:
+  #       - "CMD"
+  #       - "curl"
+  #       - "-fs"
+  #       - "-S"
+  #       - "--max-time"
+  #       - "2"
+  #       - "http://localhost:8000"
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #   volumes:
+  #     - ./data/export:/usr/src/paperless/export
+  #     - ./data/data:/usr/src/paperless/data
+  #     - ./data/media:/usr/src/paperless/media
+  #     - ./data/consume:/usr/src/paperless/consume
+  #   # env_file: docker-compose.env
+  #   environment:
+  #     PAPERLESS_REDIS: redis://broker:6379
+  #     PAPERLESS_TIKA_ENABLED: 1
+  #     PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+  #     PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+  #
+  # gotenberg:
+  #   image: docker.io/gotenberg/gotenberg:8.7
+  #   restart: unless-stopped
+  #   # The gotenberg chromium route is used to convert .eml files. We do not
+  #   # want to allow external content like tracking pixels or even javascript.
+  #   command:
+  #     - "gotenberg"
+  #     - "--chromium-disable-javascript=true"
+  #     - "--chromium-allow-list=file:///tmp/.*"
+  #
+  # tika:
+  #   image: ghcr.io/paperless-ngx/tika:latest
+  #   restart: unless-stopped
+  #
+  # broker:
+  #   image: docker.io/library/redis:7
+  #   restart: unless-stopped
+  #   volumes:
+  #     - redisdata:/data
+
+  paperless-ai:
+    image: clusterzx/paperless-ai
+    container_name: paperless-ai
+    # volumes:
+    #   - ./data/paperless-ai_data:/app/data
+    ports:
+      - "3000:3000"
+    environment:
+      PAPERLESS_API_URL: http://host.docker.internal:8000/api
+      PAPERLESS_API_TOKEN: 412f038297a4372344230b85216a3f5ccfbf38b4
+      PAPERLESS_API_USER: warpcode
+      AI_PROVIDER:  custom
+      CUSTOM_BASE_URL:  http://host.docker.internal:8080/v1
+      CUSTOM_API_KEY: "na"
+      CUSTOM_BASE_MODEL:  "/models/gemma-3-4b-it-q4_k_m.gguf"
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  # paperless-gpt:
+  #   image: icereed/paperless-gpt:latest
+  #   environment:
+  #     PAPERLESS_BASE_URL: 'http://host.docker.internal:8000'
+  #     PAPERLESS_API_TOKEN: '412f038297a4372344230b85216a3f5ccfbf38b4'
+  #     PAPERLESS_PUBLIC_URL: 'http://localhost:8000' # Optional
+  #     MANUAL_TAG: 'paperless-gpt'          # Optional, default: paperless-gpt
+  #     AUTO_TAG: 'paperless-gpt-auto'       # Optional, default: paperless-gpt-auto
+  #     LLM_PROVIDER: 'ollama'               # or 'openai'
+  #     LLM_MODEL: 'qwen2.5:1.5b'                  # or 'gpt-4o'
+  #     # OPENAI_API_KEY: 'your_openai_api_key'
+  #     # Optional - OPENAI_BASE_URL: 'https://litellm.yourinstallationof.it.com/v1'
+  #     LLM_LANGUAGE: 'English'              # Optional, default: English
+  #     OLLAMA_HOST: 'http://host.docker.internal:11434' # If using Ollama
+  #     VISION_LLM_PROVIDER: 'ollama'        # (for OCR) - openai or ollama
+  #     VISION_LLM_MODEL: 'minicpm-v'        # (for OCR) - minicpm-v (ollama example), gpt-4o (for openai), etc.
+  #     AUTO_OCR_TAG: 'paperless-gpt-ocr-auto' # Optional, default: paperless-gpt-ocr-auto
+  #     OCR_LIMIT_PAGES: '0'                 # Optional, default: 5. Set to 0 for no limit.
+  #     LOG_LEVEL: 'info'                    # Optional: debug, warn, error
+  #   volumes:
+  #     - ./data/paperless-gpt-prompts:/app/prompts   # Mount the prompts directory
+  #   ports:
+  #     - "8999:8080"
+  #   depends_on:
+  #     - webserver
+  #   extra_hosts:
+  #     - host.docker.internal:host-gateway
+
+# volumes:
+#   data:
+#   redisdata:

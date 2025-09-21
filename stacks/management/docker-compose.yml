@@ -1,0 +1,88 @@
+services:
+  # Required core
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    # ports:
+    #   - 9000:9000
+    networks:
+      - proxy_proxy
+    labels:
+      # Frontend
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.portainer.entrypoints=web"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${BASE_HOSTNAME:-localhost}`)"
+      - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
+      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.portainer-secure.entrypoints=websecure"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.${BASE_HOSTNAME:-localhost}`)"
+      - "traefik.http.routers.portainer-secure.tls.certresolver=leresolver"
+      - "traefik.http.routers.portainer-secure.service=portainer-secure"
+      - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
+
+      # # Edge
+      # - "traefik.http.routers.edge.entrypoints=web"
+      # - "traefik.http.routers.edge.rule=Host(`edge.${BASE_HOSTNAME:-localhost}`)"
+      # - "traefik.http.routers.edge.middlewares=edge-https-redirect"
+      # - "traefik.http.middlewares.edge-https-redirect.redirectscheme.scheme=https"
+      # - "traefik.http.routers.edge-secure.rule=Host(`edge.${BASE_HOSTNAME:-localhost}`)"
+      # - "traefik.http.routers.edge-secure.entrypoints=websecure"
+      # - "traefik.http.services.edge-secure.loadbalancer.server.port=8000"
+      # - "traefik.http.routers.edge-secure.service=edge-secure"
+      # - "traefik.http.routers.edge-secure.tls.certresolver=leresolver"
+
+  deunhealth:
+    image: qmcgaw/deunhealth
+    container_name: deunhealth
+    hostname: deunhealth
+    network_mode: "none"
+    environment:
+      - LOG_LEVEL=info
+      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+      - TZ=Europe/London
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  watchtower:
+    image: containrrr/watchtower
+    hostname: watchtower
+    container_name: watchtower
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "false"
+      WATCHTOWER_TIMEOUT: 30s
+      WATCHTOWER_SCHEDULE: 0 * * * * *
+      WATCHTOWER_HTTP_API_METRICS: "true"
+      WATCHTOWER_HTTP_API_TOKEN: nnnnn-nnnn-nnnn-nnnn
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy_proxy
+    labels:
+      - "deunhealth.restart.on.unhealthy=true"
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.watchtower.entrypoints=web"
+      - "traefik.http.routers.watchtower.rule=Host(`watchtower.${BASE_HOSTNAME:-localhost}`)"
+      - "traefik.http.routers.watchtower.middlewares=watchtower-https-redirect"
+      - "traefik.http.middlewares.watchtower-https-redirect.redirectscheme.scheme=https"
+      # https
+      - "traefik.http.routers.watchtower-secure.entrypoints=websecure"
+      - "traefik.http.routers.watchtower-secure.rule=Host(`watchtower.${BASE_HOSTNAME:-localhost}`)"
+      - "traefik.http.routers.watchtower-secure.tls.certresolver=leresolver"
+      - "traefik.http.routers.watchtower-secure.service=watchtower-secure"
+      - "traefik.http.services.watchtower-secure.loadbalancer.server.port=8080"
+
+networks:
+  proxy_proxy:
+    external: true
