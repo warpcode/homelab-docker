@@ -13,6 +13,7 @@ litellm_settings:
     - _internal_penguin: ["gpt-oss-20b"]
     - gpt-oss-20b: ["_internal_gpt-oss-20b_groq"]
     - llama-4-maverick-17b-instruct: ["_internal_llama-4-maverick-17b-instruct_openrouter", "_internal_llama-4-maverick-17b-instruct_groq"]
+    - o3-mini: ["_internal_o3-mini_openrouter"]
 
 # This is not a key recognised by litellm
 # but we can use it to setup some templates
@@ -134,8 +135,6 @@ model_list:
     litellm_params:
       <<: *groq_default_litellm_params
       model: groq/openai/gpt-oss-120b
-      
-
 
   #
   # # Llama 3.3 70b instruct
@@ -179,15 +178,15 @@ model_list:
       rpm: 5 # Gemini free tier: 15 RPM
       tpm: 250000 # 32k tokens per minute free tier
   
-  # # Open AI
-  # - model_name: "o3-mini"
-  #   litellm_params:
-  #     <<: *openrouter_default_litellm_params
-  #     model: openrouter/openai/o3-mini
-  # - model_name: "o3-mini"
-  #   litellm_params:
-  #     <<: *openai_default_litellm_params
-  #     model: openai/o3-mini
+  # Open AI
+  - model_name: "o3-mini"
+    litellm_params:
+      <<: *openai_default_litellm_params
+      model: openai/o3-mini
+  - model_name: _internal_o3-mini_openrouter
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: openrouter/openai/o3-mini
 
   # Providers
   - model_name: "github/*"
