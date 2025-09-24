@@ -12,6 +12,7 @@ litellm_settings:
   fallbacks:
     - _internal_penguin: ["gpt-oss-20b"]
     - gpt-oss-20b: ["_internal_gpt-oss-20b_groq"]
+    - llama-4-maverick-17b-instruct: ["_internal_llama-4-maverick-17b-instruct_openrouter", "_internal_llama-4-maverick-17b-instruct_groq"]
 
 # This is not a key recognised by litellm
 # but we can use it to setup some templates
@@ -19,8 +20,8 @@ provider_settings:
   groq:
     default_litellm_params: &groq_default_litellm_params
       # https://console.groq.com/docs/rate-limits
-      # rpm: 30 # Default RPM for all Groq models
-      # tpm: 6000 # Default TPM for all Groq models
+      rpm: 30 # Default RPM for all Groq models
+      tpm: 6000 # Default TPM for all Groq models
       # timeout: 30 # Default timeout for Groq
       api_key: os.environ/GROQ_API_KEY
 
@@ -126,16 +127,14 @@ model_list:
     litellm_params:
       <<: *groq_default_litellm_params
       model: groq/openai/gpt-oss-20b
-      rpm: 30 # Default RPM for all Groq models
-      tpm: 6000 # Default TPM for all Groq models
+      
 
   # gpt-oss-120b
   - model_name: gpt-oss-120b
     litellm_params:
       <<: *groq_default_litellm_params
       model: groq/openai/gpt-oss-120b
-      rpm: 30 # Default RPM for all Groq models
-      tpm: 6000 # Default TPM for all Groq models
+      
 
 
   #
@@ -150,19 +149,19 @@ model_list:
   #     <<: *groq_default_litellm_params
   #     model: groq/llama-3.3-70b-versatile
   #
-  # # Llama 4 Maverick 17B Instruct (128E)
-  # - model_name: llama-4-maverick-17b-128e-instruct
-  #   litellm_params:
-  #     <<: *github_default_litellm_params
-  #     model: github/Llama-4-Maverick-17B-128E-Instruct-FP8
-  # - model_name: llama-4-maverick-17b-128e-instruct
-  #   litellm_params:
-  #     <<: *openrouter_default_litellm_params
-  #     model: openrouter/meta-llama/llama-4-maverick
-  # - model_name: llama-4-maverick-17b-128e-instruct
-  #   litellm_params:
-  #     <<: *groq_default_litellm_params
-  #     model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
+  # Llama 4 Maverick 17B Instruct (128E)
+  - model_name: llama-4-maverick-17b-instruct
+    litellm_params:
+      <<: *github_default_litellm_params
+      model: github/Llama-4-Maverick-17B-128E-Instruct-FP8
+  - model_name: _internal_llama-4-maverick-17b-instruct_openrouter
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: openrouter/meta-llama/llama-4-maverick
+  - model_name: _internal_llama-4-maverick-17b-instruct_groq
+    litellm_params:
+      <<: *groq_default_litellm_params
+      model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
   #
   # Gemini 2.5 flash
   - model_name: "gemini-2.5-flash"
