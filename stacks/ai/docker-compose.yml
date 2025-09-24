@@ -50,6 +50,7 @@ services:
       - "--num_workers"
       - "8"
     networks:
+      - default
       - proxy_proxy
     labels:
       - "deunhealth.restart.on.unhealthy=true"
