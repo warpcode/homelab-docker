@@ -11,9 +11,7 @@ litellm_settings:
 
   fallbacks:
     - _internal_penguin: ["gpt-oss-20b"]
-    - gpt-oss-20b: ["_internal_gpt-oss-20b_groq"]
-    - llama-4-maverick-17b-instruct: ["_internal_llama-4-maverick-17b-instruct_openrouter", "_internal_llama-4-maverick-17b-instruct_groq"]
-    - o3-mini: ["_internal_o3-mini_openrouter"]
+    - gemini-2.5: ["gemini-2.5-flash"]
 
 # This is not a key recognised by litellm
 # but we can use it to setup some templates
@@ -69,7 +67,8 @@ provider_settings:
 router_settings:
   # routing_strategy: rate-limit-aware # Use priority-based routing
   enable_pre_call_checks: false
-
+  model_group_alias:
+    _internal_penguin: ["tinyllama-1.1b-chat"]
 
   #   # # Global router-level rate limits (across all models)
   #   # rpm_limit: 100 # Total requests per minute across all models
@@ -102,12 +101,10 @@ model_list:
       model: dotprompt/**
       prompt_id: penguin
 
-  - model_name: _internal_penguin
+  - model_name: coding-assistant
     litellm_params:
-      model: openai/tinyllama-1.1b-chat
-      api_base: http://model-tinyllama:8080/v1
-      api_key:
-      stream: true # Recommended for chat to avoid long waits
+      model: "dotprompt/*"
+      prompt_id: "coding-assistant"
 
   - model_name: adhd advisor
     litellm_params:
@@ -131,7 +128,6 @@ model_list:
     litellm_params:
       <<: *groq_default_litellm_params
       model: groq/openai/gpt-oss-20b
-      
 
   # gpt-oss-120b
   - model_name: gpt-oss-120b

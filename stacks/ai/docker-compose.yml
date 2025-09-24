@@ -55,6 +55,7 @@ services:
     labels:
       - "deunhealth.restart.on.unhealthy=true"
       - "traefik.enable=true"
+      - "traefik.docker.network=proxy_proxy"
       # http
       - "traefik.http.routers.litellm.entrypoints=web"
       - "traefik.http.routers.litellm.rule=Host(`litellm.ai.${BASE_HOSTNAME:-localhost}`)"
