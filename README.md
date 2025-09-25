@@ -9,7 +9,7 @@ The repository is organized into logical "stacks" under the `stacks/` directory.
 - **`stacks/ai/`**: Services related to Artificial Intelligence, including LLM inference servers and AI chat interfaces.
 - **`stacks/documents/`**: Document management and processing services.
 - **`stacks/management/`**: Tools for Docker environment management (e.g., Portainer, Watchtower).
-- **`stacks/mcp/`**: (Currently empty or unconfigured) Placeholder for future services.
+- **`stacks/mcp/`**: Services related to Model Context Protocol (MCP) implementations and tools.
 - **`stacks/proxy/`**: Traefik reverse proxy for routing and SSL termination.
 - **`stacks/recipes/`**: Recipe management and meal planning applications.
 
