@@ -10,7 +10,6 @@ litellm_settings:
   budget_duration: 30d # (str) frequency of reset - You can set duration as seconds ("30s"), minutes ("30m"), hours ("30h"), days ("30d").
 
   fallbacks:
-    - _internal_penguin: ["gpt-oss-20b"]
     - gemini-2.5: ["gemini-2.5-flash"]
 
 # This is not a key recognised by litellm
@@ -68,7 +67,7 @@ router_settings:
   # routing_strategy: rate-limit-aware # Use priority-based routing
   enable_pre_call_checks: false
   model_group_alias:
-    _internal_penguin: ["tinyllama-1.1b-chat"]
+    gemini.2.5: ["gemini-2.5-pro"]
 
   #   # # Global router-level rate limits (across all models)
   #   # rpm_limit: 100 # Total requests per minute across all models
@@ -89,17 +88,12 @@ router_settings:
   #   RateLimitErrorAllowedFails: 100 # Allow 100 RateLimitErrors before cooling down a deployment
 
 model_list:
-  - model_name: tinyllama-1.1b-chat
-    litellm_params:
-      model: openai/tinyllama-1.1b-chat
-      api_base: http://model-tinyllama:8080/v1
-      api_key:
-      stream: true # Recommended for chat to avoid long waits
-
-  - model_name: penguin-prompt
-    litellm_params:
-      model: dotprompt/**
-      prompt_id: penguin
+  # - model_name: tinyllama-1.1b-chat
+  #   litellm_params:
+  #     model: openai/tinyllama-1.1b-chat
+  #     api_base: http://model-tinyllama:8080/v1
+  #     api_key:
+  #     stream: true # Recommended for chat to avoid long waits
 
   - model_name: coding-assistant
     litellm_params:
@@ -118,6 +112,11 @@ model_list:
     litellm_params:
       model: "dotprompt/*"
       prompt_id: "parody-article-generator"
+
+  - model_name: prompt-writer
+    litellm_params:
+      model: "dotprompt/*"
+      prompt_id: "prompt-writer"
 
   # gpt-oss-20b
   - model_name: gpt-oss-20b
