@@ -10,7 +10,11 @@ litellm_settings:
   budget_duration: 30d # (str) frequency of reset - You can set duration as seconds ("30s"), minutes ("30m"), hours ("30h"), days ("30d").
 
   fallbacks:
-    - gemini-2.5: ["gemini-2.5-flash"]
+    - "coding-assistant": ["gemini-2.5-flash"]
+
+  # Map aliases directly to provider-qualified model IDs
+  model_alias_map:
+    "_coding_assistant": gemini/gemini-2.5-pro
 
 # This is not a key recognised by litellm
 # but we can use it to setup some templates
@@ -67,7 +71,7 @@ router_settings:
   # routing_strategy: rate-limit-aware # Use priority-based routing
   enable_pre_call_checks: false
   model_group_alias:
-    gemini.2.5: ["gemini-2.5-pro"]
+    "_gemini_2_5": ["gemini-2.5-pro"]
 
   #   # # Global router-level rate limits (across all models)
   #   # rpm_limit: 100 # Total requests per minute across all models
@@ -140,7 +144,7 @@ model_list:
   - model_name: gpt-oss-20b
     litellm_params:
       <<: *openrouter_default_litellm_params
-      model: openrouter/openai/gpt-oss-20b
+      model: openrouter/openai/gpt-oss-20b:free
   - model_name: gpt-oss-20b
     litellm_params:
       <<: *groq_default_litellm_params
@@ -150,7 +154,7 @@ model_list:
   - model_name: gpt-oss-120b
     litellm_params:
       <<: *openrouter_default_litellm_params
-      model: openrouter/openai/gpt-oss-120b
+      model: openrouter/openai/gpt-oss-120b:free
   - model_name: gpt-oss-120b
     litellm_params:
       <<: *groq_default_litellm_params
@@ -164,7 +168,7 @@ model_list:
   - model_name: llama-4-maverick-17b-instruct
     litellm_params:
       <<: *openrouter_default_litellm_params
-      model: openrouter/meta-llama/llama-4-maverick
+      model: openrouter/meta-llama/llama-4-maverick:free
   - model_name: llama-4-maverick-17b-instruct
     litellm_params:
       <<: *groq_default_litellm_params

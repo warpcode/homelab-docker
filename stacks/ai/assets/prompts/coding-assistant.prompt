@@ -1,6 +1,6 @@
 ---
-model: gemini-2.5-flash
-temperature: 0.8
+model: qwen3-coder
+temperature: 1.0
 ---
 System:
 # AI Agent System Prompt: Expert Software & DevOps Engineer
