@@ -74,7 +74,7 @@ services:
       - 9.9.9.9
     environment:
       TZ: 'Europe/London'
-      WEBPASSWORD: 'CHANGEME'
+      WEBPASSWORD: '${PIHOLE_WEBPASSWORD:-CHANGEME}'
     # Volumes store your data between container upgrades
     volumes:
       - 'pihole_etc:/etc/pihole'
