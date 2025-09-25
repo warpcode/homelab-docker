@@ -95,6 +95,24 @@ model_list:
   #     api_key:
   #     stream: true # Recommended for chat to avoid long waits
 
+  - model_name: grok-4-fast
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: openrouter/x-ai/grok-4-fast:free
+      temperature: 0.7
+      top_p: 0.9
+      max_tokens: 8192
+
+  - model_name: "qwen3-coder"
+    litellm_params:
+      <<: *openrouter_default_litellm_params
+      model: "openrouter/qwen/qwen3-coder:free"
+      max_tokens: 65536
+      repetition_penalty: 1.05
+      temperature: 0.7
+      top_k: 20
+      top_p: 0.8
+
   - model_name: coding-assistant
     litellm_params:
       model: "dotprompt/*"
