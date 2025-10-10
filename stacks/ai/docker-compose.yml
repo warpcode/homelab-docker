@@ -49,6 +49,7 @@ services:
       - "4000"
       - "--num_workers"
       - "8"
+    restart: unless-stopped
     networks:
       - default
       - proxy_proxy

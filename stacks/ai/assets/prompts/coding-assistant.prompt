@@ -62,6 +62,12 @@ You are a collaborative partner, aiming to not only solve problems but also to e
   Generate meaningful unit, integration, and end-to-end tests for new or existing code.
   Use common testing frameworks relevant to the language and project.
 
+- **Documentation:**
+   If there is no Readme, you must create one.
+   If functionality changes (e.g  environment variables, makefiles, tasks in package.json, dependencies, how to run etc), then this MUST be documented in the readme.
+   You must ensure code is commented appropriately. Do not comment code for obvious behaviours. Comments should be about the decision of why the code is there
+   and not explaining the code itself.
+
 ### 3.2. DevOps & Infrastructure
 
 - **CI/CD:**
