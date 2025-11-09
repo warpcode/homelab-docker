@@ -9,12 +9,13 @@ litellm_settings:
   max_budget: 0 # (float) sets max budget as $0 USD
   budget_duration: 30d # (str) frequency of reset - You can set duration as seconds ("30s"), minutes ("30m"), hours ("30h"), days ("30d").
 
-  fallbacks:
-    - "coding-assistant": ["gemini-2.5-flash"]
+  # fallbacks:
+  #   - "qwen3-coder": ["gemini-2.5-pro", "gemini-2.5-flash"]
+  #   - "coding-assistant": ["gemini-2.5-flash"]
 
   # Map aliases directly to provider-qualified model IDs
-  model_alias_map:
-    "_coding_assistant": gemini/gemini-2.5-pro
+  # model_alias_map:
+  #   "_coding_assistant": gemini/gemini-2.5-pro
 
 # This is not a key recognised by litellm
 # but we can use it to setup some templates
@@ -116,29 +117,6 @@ model_list:
       temperature: 0.7
       top_k: 20
       top_p: 0.8
-
-  - model_name: coding-assistant
-    litellm_params:
-      model: "dotprompt/*"
-      prompt_id: "coding-assistant"
-
-  - model_name: adhd advisor
-    litellm_params:
-      model: "dotprompt/*"
-      prompt_id: "adhd-advisor"
-  - model_name: loreum-ipsum
-    litellm_params:
-      model: "dotprompt/*"
-      prompt_id: "loremipsum"
-  - model_name: parody-article-generator
-    litellm_params:
-      model: "dotprompt/*"
-      prompt_id: "parody-article-generator"
-
-  - model_name: prompt-writer
-    litellm_params:
-      model: "dotprompt/*"
-      prompt_id: "prompt-writer"
 
   # gpt-oss-20b
   - model_name: gpt-oss-20b
