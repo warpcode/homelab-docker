@@ -9,7 +9,7 @@ define deploy_template =
     .PHONY: deploy-$(1)
 
     deploy-$(1):
-		cd stacks/$1; docker compose up -d
+		docker stack deploy -c stacks/$1/docker-compose.yml $1
 endef
 $(foreach cmpnt,$(STACKS_DIRS),$(eval $(call deploy_template,$(cmpnt))))
 
@@ -17,7 +17,7 @@ define stop_template =
     .PHONY: stop-$(1)
 
     stop-$(1):
-		cd stacks/$1; docker compose down
+		docker stack rm $1
 endef
 $(foreach cmpnt,$(STACKS_DIRS),$(eval $(call stop_template,$(cmpnt))))
 
@@ -25,15 +25,15 @@ define restart_template =
     .PHONY: restart-$(1)
 
     restart-$(1):
-		cd stacks/$1; docker compose restart
+		docker stack deploy -c stacks/$1/docker-compose.yml $1
 endef
 $(foreach cmpnt,$(STACKS_DIRS),$(eval $(call restart_template,$(cmpnt))))
-
 
 define down_template =
     .PHONY: down-$(1)
 
     down-$(1):
-		cd stacks/$1; docker compose down
+		docker stack rm $1
+
 endef
 $(foreach cmpnt,$(STACKS_DIRS),$(eval $(call down_template,$(cmpnt))))

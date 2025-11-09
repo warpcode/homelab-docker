@@ -3,6 +3,10 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
+    # ports:
+    #   - target: 9000
+    #     published: 9000
+    #     mode: host
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

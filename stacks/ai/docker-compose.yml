@@ -23,7 +23,7 @@ services:
      #   - "4000:4000" # Map the container port to the host, change the host port if necessary
      environment:
        - LITELLM_LOG=INFO
-       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
        - GEMINI_API_KEY=${GEMINI_API_KEY}
        - GITHUB_API_KEY=${GITHUB_API_KEY}
        - GROQ_API_KEY=${GROQ_API_KEY}
@@ -104,8 +104,9 @@ services:
     #   - 8282:8080
     environment:
        - ENABLE_OPENAI_API=true
-       - OPENAI_API_BASE_URLS=http://litellm:4000/v1;http://host.docker.internal:12434/engines/llama.cpp/v1
-       - OPENAI_API_KEYS=${LITELLM_MASTER_KEY:-sk-1234};1234
+       # - OPENAI_API_BASE_URLS=http://litellm:4000/v1;http://host.docker.internal:12434/engines/llama.cpp/v1
+       - OPENAI_API_BASE_URLS=http://litellm.ai.warpcode.co.uk/v1
+       - OPENAI_API_KEYS=${LITELLM_MASTER_KEY:-sk-1234}
        # - OLLAMA_BASE_URL=http://ollama:11434
        # - WEBUI_SECRET_KEY: testtest
     extra_hosts:
@@ -165,7 +166,7 @@ services:
 
 configs:
   litellm-config:
-    file: ./assets/litellm-config.yml
+    file: ./config/litellm-config.yml
   # litellm-prompts:
   #   file: ./assets/prompts/
 

@@ -5,11 +5,23 @@ services:
     cap_add:
       - NET_BIND_SERVICE
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "3000:3000"
-      # - "8888:80"
-      # - "8443:443"
+      - target: 53
+        published: 53
+        protocol: tcp
+        mode: host
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 3000
+        published: 3000
+        mode: host
+      # - target: 80
+      #   published: 8888
+      #   mode: host
+      # - target: 443
+      #   published: 8443
+      #   mode: host
     restart: unless-stopped
     volumes:
       - adguard_work:/opt/adguardhome/work
