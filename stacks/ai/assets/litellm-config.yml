@@ -21,16 +21,16 @@ litellm_settings:
 # but we can use it to setup some templates
 provider_settings:
   groq:
-    default_litellm_params: &groq_default_litellm_params
-      # https://console.groq.com/docs/rate-limits
+    default_litellm_params:
+      &groq_default_litellm_params # https://console.groq.com/docs/rate-limits
       rpm: 30 # Default RPM for all Groq models
       tpm: 6000 # Default TPM for all Groq models
       # timeout: 30 # Default timeout for Groq
       api_key: os.environ/GROQ_API_KEY
 
   openrouter:
-    default_litellm_params: &openrouter_default_litellm_params
-      # https://openrouter.ai/docs/api-reference/limits
+    default_litellm_params:
+      &openrouter_default_litellm_params # https://openrouter.ai/docs/api-reference/limits
       rpm: 20 # Default RPM for all OpenRouter models
       # tpm: 100000 # OpenRouter doesn't have strict token limits
       # timeout: 60 # Default timeout for OpenRouter
@@ -137,7 +137,7 @@ model_list:
     litellm_params:
       <<: *groq_default_litellm_params
       model: groq/openai/gpt-oss-120b
-      
+
   # Llama 4 Maverick 17B Instruct (128E)
   - model_name: llama-4-maverick-17b-instruct
     litellm_params:
@@ -168,8 +168,7 @@ model_list:
       model: "gemini/gemini-2.5-flash"
       rpm: 10 # Gemini free tier: 15 RPM
       tpm: 250000 # 32k tokens per minute free tier
-  
-  
+
   # Open AI
   - model_name: "o3-mini"
     litellm_params:
@@ -184,7 +183,6 @@ model_list:
     litellm_params:
       <<: *github_high_litellm_params
       model: "github/DeepSeek-V3-0324"
-
 
   # Providers
   # - model_name: "github/*"

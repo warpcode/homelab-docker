@@ -9,8 +9,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    # ports:
-    #   - 9000:9000
     networks:
       - proxy_proxy
     labels:

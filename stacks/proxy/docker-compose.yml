@@ -1,13 +1,16 @@
 services:
   cert-generator:
     image: alpine:latest
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     volumes:
       - certs:/certs
     command: |
       sh -c "
       if [ ! -f /certs/tls.crt ]; then
         apk add --no-cache openssl;
-        openssl req -x509 -newkey rsa:4096 -keyout /certs/tls.key -out /certs/tls.crt -days 3650 -nodes -subj '/C=US/ST=State/L=City/O=Org/CN=*.localhost';
+        openssl req -x509 -newkey rsa:4096 -keyout /certs/tls.key -out /certs/tls.crt -days 3650 -nodes -subj '/C=US/ST=State/L=City/O=Org/CN=*.warpcode.co.uk';
         chmod 600 /certs/tls.key;
         chmod 644 /certs/tls.crt;
         echo 'Certificates generated';
