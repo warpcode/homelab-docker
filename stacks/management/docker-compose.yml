@@ -64,7 +64,7 @@ services:
       WATCHTOWER_TIMEOUT: 30s
       WATCHTOWER_SCHEDULE: 0 * * * * *
       WATCHTOWER_HTTP_API_METRICS: "true"
-      WATCHTOWER_HTTP_API_TOKEN: '${WATCHTOWER_API_TOKEN}'
+      WATCHTOWER_HTTP_API_TOKEN: '${WATCHTOWER_API_TOKEN:-CHANGEME}'
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
