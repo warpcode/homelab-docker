@@ -6,6 +6,9 @@ services:
       - NET_ADMIN
     volumes:
       - certs:/certs
+    deploy:
+      restart_policy:
+        condition: none
     command: |
       sh -c "
       if [ ! -f /certs/tls.crt ]; then
