@@ -3,6 +3,7 @@
 deploy: $(addprefix deploy-,$(STACKS_DIRS))
 stop: $(addprefix stop-,$(STACKS_DIRS))
 restart: $(addprefix restart-,$(STACKS_DIRS))
+down: $(addprefix down-,$(STACKS_DIRS))
 
 define deploy_template =
     .PHONY: deploy-$(1)
