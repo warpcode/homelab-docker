@@ -46,6 +46,7 @@ services:
       - --log.level=ERROR
       - --providers.docker.exposedbydefault=false
       - --providers.docker=true
+      # - --providers.swarm=true
       - --providers.file.directory=/certs
       - --providers.file.watch=true
       # - --certificatesresolvers.leresolver.acme.httpchallenge=true

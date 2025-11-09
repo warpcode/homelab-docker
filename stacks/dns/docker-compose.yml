@@ -7,8 +7,8 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      # - "3000:3000"
-      - "8080:80"
+      - "3000:3000"
+      # - "8888:80"
       # - "8443:443"
     restart: unless-stopped
     volumes:
