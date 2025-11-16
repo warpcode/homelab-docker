@@ -3,10 +3,11 @@ services:
   #
   # Management
   #
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
+   portainer:
+     image: portainer/portainer-ce:latest
+     deploy:
+       restart_policy:
+         condition: on-failure
     security_opt:
       - no-new-privileges:true
     volumes:
@@ -31,9 +32,11 @@ services:
       - "traefik.http.routers.edge.service=edge"
       - "traefik.http.routers.edge.tls.certresolver=leresolver"
 
-  registry:
-    restart: unless-stopped
-    image: registry:2
+   registry:
+     image: registry:2
+     deploy:
+       restart_policy:
+         condition: on-failure
     ports:
       - 5000:5000
     # environment:
@@ -50,9 +53,11 @@ services:
   #
   # DNS
   #
-  consul:
-    container_name: consul
-    image: hashicorp/consul
+   consul:
+     image: hashicorp/consul
+     deploy:
+       restart_policy:
+         condition: on-failure
     ports:
       - '8300:8300'
       - '8301:8301'
@@ -60,31 +65,32 @@ services:
       - '8500:8500'
       - '8600:8600'
       - '8600:8600/udp'
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
-    # ports:
-      # - "53:53/tcp"
-      # - "53:53/udp"
-      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      # - "8081:80/tcp"
-    dns:
-      - 127.0.0.1
-      - 9.9.9.9
-    environment:
-      TZ: 'Europe/London'
-      WEBPASSWORD: '${PIHOLE_WEBPASSWORD:-CHANGEME}'
-    # Volumes store your data between container upgrades
-    volumes:
-      - 'pihole_etc:/etc/pihole'
-      - 'pihole_dnsmasq_d:/etc/dnsmasq.d'
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    networks:
-      - reverse_proxy
-    cap_add:
-      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
-    restart: unless-stopped
+   pihole:
+     image: pihole/pihole:latest
+     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+     # ports:
+       # - "53:53/tcp"
+       # - "53:53/udp"
+       # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+       # - "8081:80/tcp"
+     dns:
+       - 127.0.0.1
+       - 9.9.9.9
+     environment:
+       TZ: 'Europe/London'
+       WEBPASSWORD: '${PIHOLE_WEBPASSWORD:-CHANGEME}'
+     # Volumes store your data between container upgrades
+     volumes:
+       - 'pihole_etc:/etc/pihole'
+       - 'pihole_dnsmasq_d:/etc/dnsmasq.d'
+     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+     networks:
+       - reverse_proxy
+     cap_add:
+       - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+     deploy:
+       restart_policy:
+         condition: on-failure
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pihole.rule=Host(`pihole.localhost`)"

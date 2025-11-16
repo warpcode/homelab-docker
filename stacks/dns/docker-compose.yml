@@ -1,7 +1,6 @@
 services:
   adguardhome:
     image: adguard/adguardhome:latest
-    container_name: adguardhome
     cap_add:
       - NET_BIND_SERVICE
     ports:
@@ -22,7 +21,9 @@ services:
       # - target: 443
       #   published: 8443
       #   mode: host
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - adguard_work:/opt/adguardhome/work
       - adguard_config:/opt/adguardhome/conf

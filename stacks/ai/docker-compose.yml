@@ -1,5 +1,3 @@
----
-
 services:
   # model-tinyllama:
   #   image: ghcr.io/ggerganov/llama.cpp:server-vulkan
@@ -18,33 +16,35 @@ services:
   #     start_period: 60s
 
   litellm:
-     image: ghcr.io/berriai/litellm:main-stable
-     # ports:
-     #   - "4000:4000" # Map the container port to the host, change the host port if necessary
-     environment:
-       - LITELLM_LOG=INFO
-       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
-       - GEMINI_API_KEY=${GEMINI_API_KEY}
-       - GITHUB_API_KEY=${GITHUB_API_KEY}
-       - GROQ_API_KEY=${GROQ_API_KEY}
-       - OPENAI_API_KEY=${OPENAI_API_KEY}
-       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-     configs:
+    image: ghcr.io/berriai/litellm:main-stable
+    # ports:
+    #   - "4000:4000" # Map the container port to the host, change the host port if necessary
+    environment:
+      - LITELLM_LOG=INFO
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_API_KEY=${GITHUB_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    configs:
       - source: litellm-config
         target: /config/config.yml
-     # You can change the port or number of workers as per your requirements or pass any new supported CLI argument. Make sure the port passed here matches with the container port defined above in `ports` value
-     command:
-       - "--config"
-       - "/config/config.yml"
-       - "--port"
-       - "4000"
-       - "--num_workers"
-       - "8"
-     restart: unless-stopped
-     networks:
-        - default
-        - proxy_proxy
-     labels:
+    # You can change the port or number of workers as per your requirements or pass any new supported CLI argument. Make sure the port passed here matches with the container port defined above in `ports` value
+    command:
+      - "--config"
+      - "/config/config.yml"
+      - "--port"
+      - "4000"
+      - "--num_workers"
+      - "8"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - default
+      - proxy_proxy
+    labels:
         - "deunhealth.restart.on.unhealthy=true"
         - "traefik.enable=true"
         - "traefik.docker.network=proxy_proxy"
@@ -94,24 +94,22 @@ services:
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
     # volumes:
     #   - ./data/open-webui:/app/backend/data
-    # depends_on:
-    #   ollama:
-    #     condition: service_healthy
     # ports:
     #   - 8282:8080
     environment:
-       - ENABLE_OPENAI_API=true
-       # - OPENAI_API_BASE_URLS=http://litellm:4000/v1;http://host.docker.internal:12434/engines/llama.cpp/v1
-       - OPENAI_API_BASE_URLS=http://litellm.ai.warpcode.co.uk/v1
-       - OPENAI_API_KEYS=${LITELLM_MASTER_KEY:-sk-1234}
-       # - OLLAMA_BASE_URL=http://ollama:11434
-       # - WEBUI_SECRET_KEY: testtest
+      - ENABLE_OPENAI_API=true
+      # - OPENAI_API_BASE_URLS=http://litellm:4000/v1;http://host.docker.internal:12434/engines/llama.cpp/v1
+      - OPENAI_API_BASE_URLS=http://litellm.ai.warpcode.co.uk/v1
+      - OPENAI_API_KEYS=${LITELLM_MASTER_KEY:-sk-1234}
+      # - OLLAMA_BASE_URL=http://ollama:11434
+      # - WEBUI_SECRET_KEY: testtest
     extra_hosts:
       - host.docker.internal:host-gateway
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     networks:
       - default
       - proxy_proxy
@@ -163,7 +161,6 @@ services:
   #   #   - ollama-api
   #   depends_on:
   #     - ollama
-
 configs:
   litellm-config:
     file: ./config/litellm-config.yml

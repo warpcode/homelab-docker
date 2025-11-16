@@ -2,12 +2,13 @@ services:
   # Required core
   portainer:
     image: portainer/portainer-ce:latest
-    container_name: portainer
     # ports:
     #   - target: 9000
     #     published: 9000
     #     mode: host
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     security_opt:
       - no-new-privileges:true
     volumes:
@@ -43,21 +44,21 @@ services:
 
   deunhealth:
     image: qmcgaw/deunhealth
-    container_name: deunhealth
     hostname: deunhealth
     network_mode: "none"
     environment:
       - LOG_LEVEL=info
       - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
       - TZ=Europe/London
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   watchtower:
     image: containrrr/watchtower
     hostname: watchtower
-    container_name: watchtower
     environment:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_INCLUDE_STOPPED: "false"
@@ -65,7 +66,9 @@ services:
       WATCHTOWER_SCHEDULE: 0 * * * * *
       WATCHTOWER_HTTP_API_METRICS: "true"
       WATCHTOWER_HTTP_API_TOKEN: '${WATCHTOWER_API_TOKEN:-CHANGEME}'
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:

@@ -1,9 +1,9 @@
 services:
   mealie:
     image: ghcr.io/mealie-recipes/mealie:v3.0.2 #
-    container_name: mealie
-    restart: always
     deploy:
+      restart_policy:
+        condition: any
       resources:
         limits:
           memory: 1000M #

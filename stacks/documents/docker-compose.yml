@@ -56,7 +56,6 @@ services:
 
   paperless-ai:
     image: clusterzx/paperless-ai
-    container_name: paperless-ai
     # volumes:
     #   - ./data/paperless-ai_data:/app/data
     ports:
@@ -69,7 +68,9 @@ services:
       CUSTOM_BASE_URL:  http://host.docker.internal:8080/v1
       CUSTOM_API_KEY: "na"
       CUSTOM_BASE_MODEL:  "/models/gemma-3-4b-it-q4_k_m.gguf"
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
     extra_hosts:
       - host.docker.internal:host-gateway
 

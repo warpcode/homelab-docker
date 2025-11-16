@@ -1,9 +1,10 @@
 services:
   # Required core
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
+   portainer:
+     image: portainer/portainer-ce:latest
+     deploy:
+       restart_policy:
+         condition: on-failure
     security_opt:
       - no-new-privileges:true
     volumes:
@@ -31,9 +32,11 @@ services:
       - "traefik.http.routers.edge.tls.certresolver=leresolver"
 
 
-  registry:
-    restart: unless-stopped
-    image: registry:2
+   registry:
+     image: registry:2
+     deploy:
+       restart_policy:
+         condition: on-failure
     ports:
       - 5000:5000
     # environment:
