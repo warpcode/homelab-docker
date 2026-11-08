@@ -9,7 +9,6 @@ The repository is organized into logical "stacks" under the `stacks/` directory.
 - **`stacks/ai/`**: Services related to Artificial Intelligence, including LLM inference servers and AI chat interfaces.
 - **`stacks/documents/`**: Document management and processing services.
 - **`stacks/management/`**: Tools for Docker environment management (e.g., Portainer, Watchtower).
-- **`stacks/mcp/`**: Services related to Model Context Protocol (MCP) implementations and tools.
 - **`stacks/n8n/`**: n8n automation suite for workflow orchestration and API integrations.
 - **`stacks/proxy/`**: Traefik reverse proxy for routing and SSL termination.
 - **`stacks/recipes/`**: Recipe management and meal planning applications.
@@ -28,7 +27,7 @@ The `old/` directory contains older or alternative Docker Compose configurations
 Here's a list of the main services and their default access URLs:
 
 - **Portainer**: `https://portainer.localhost`
-- **Pi-hole**: `https://pihole.localhost`
+- **AdGuard Home**: `https://dns.localhost`
 - **LiteLLM**: `http://litellm.ai.localhost` (HTTPS commented out in config)
 - **Open-WebUI**: `https://ai.localhost`
 - **n8n**: `https://n8n.localhost`
