@@ -1,13 +1,14 @@
-#!/bin/env bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-curl -sSL 'http://litellm.ai.localhost/v1/models' --header 'Authorization: Bearer sk-1234' --header 'Content-Type: application/json' | jq -c '
+curl -f -sSL 'http://litellm.ai.localhost/v1/models' --header 'Authorization: Bearer sk-1234' --header 'Content-Type: application/json' | jq -c '
     .data |
     # create a new object where all keys with the same model name (last part of the id after "/") are grouped together
     group_by(.id | split("/") | last) |
     map({
       (.[0].id | split("/") | last): [ .[].id ]
     }) |
-    add |
+    (add // {}) |
     [ "preview", "deprecated", "*", "beta", "embedding", "tts" ] as $bad_words |
     to_entries |
     map(
