@@ -4,6 +4,7 @@ deploy: $(addprefix deploy-,$(STACKS_DIRS))
 stop: $(addprefix stop-,$(STACKS_DIRS))
 restart: $(addprefix restart-,$(STACKS_DIRS))
 down: $(addprefix down-,$(STACKS_DIRS))
+validate: $(addprefix validate-,$(STACKS_DIRS))
 
 define deploy_template =
     .PHONY: deploy-$(1)
@@ -37,3 +38,11 @@ define down_template =
 
 endef
 $(foreach cmpnt,$(STACKS_DIRS),$(eval $(call down_template,$(cmpnt))))
+
+define validate_template =
+    .PHONY: validate-$(1)
+
+    validate-$(1):
+		docker compose -f stacks/$1/docker-compose.yml config -q
+endef
+$(foreach cmpnt,$(STACKS_DIRS),$(eval $(call validate_template,$(cmpnt))))
