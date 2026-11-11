@@ -1,6 +1,8 @@
 services:
   cert-generator:
     image: alpine:latest
+    security_opt:
+      - no-new-privileges:true
     cap_add:
       - SYS_ADMIN
       - NET_ADMIN
@@ -39,6 +41,8 @@ services:
       "
   reverse-proxy:
     image: traefik:v3.5
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       - cert-generator
     command:
@@ -56,10 +60,10 @@ services:
       # - --certificatesresolvers.leresolver.acme.email=your-email #Set your email address here, is for the generation of SSL certificates with Let's Encrypt.
       # - --certificatesresolvers.leresolver.acme.storage=./acme.json
        # - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
-     deploy:
-       restart_policy:
-         condition: on-failure
-     ports:
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
       # The HTTP port
       - target: 80
         published: 80
